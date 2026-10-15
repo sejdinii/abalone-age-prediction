@@ -1,26 +1,34 @@
-# Abalone Age Prediction - Comparative ML Study
+# Abalone Age Prediction: Statistical vs Algorithmic Models
 
-Predicting abalone age from morphological measurements using statistical and algorithmic approaches.
+Predicting the age of abalone from physical measurements, and comparing a statistical model (polynomial regression with Lasso) with an algorithmic one (XGBoost).
+MSc Data Science coursework (Data Mining), Lancaster University Leipzig.
 
-## 📊 Project Overview
-- **Objective**: Compare Polynomial Regression (with Lasso) vs XGBoost for age prediction
-- **Dataset**: 4,000 abalone samples with 9 morphological features
-- **Best Model**: XGBoost achieved R² = 0.615, MAE = 1.54 years
+Age is normally measured by cutting the shell, staining it and counting rings under a microscope, which is slow and expensive. Both models estimate it from length, diameter, height and weight measurements instead.
 
-## 🔧 Technologies Used
-- Python (Pandas, NumPy, scikit-learn)
-- XGBoost, Hyperopt
-- SHAP for model interpretability
-- Matplotlib, Seaborn for visualization
+## Approach
 
-## 📈 Key Results
-- Engineered biologically-motivated features (meat ratio, viscera ratio)
-- Applied Lasso regularization (reduced 90 terms to 26)
-- Implemented nested k-fold cross-validation
-- SHAP analysis identified shell weight and meat ratio as top predictors
+- **Data:** 4,000 abalone with sex, length, diameter, height and four weight measurements. Age = rings + 1.5.
+- **Feature engineering:** biologically motivated ratios such as meat ratio and viscera ratio.
+- **Polynomial regression:** degree-2 expansion to 90 terms, then LassoCV (10-fold) kept 26 of them.
+- **XGBoost:** hyperparameters tuned with Hyperopt (TPE) during development, then fixed for the final evaluation.
+- **Validation:** nested k-fold cross-validation with min-max scaling fitted on training data only, then a held-out test set.
+- **Interpretation:** SHAP values. Shell weight is the strongest predictor.
 
-## 🎓 Context
-University coursework project (2024-2025)
+## Results (held-out test set)
 
-## 📝 Note
-This project demonstrates comparative analysis of statistical and algorithmic machine learning approaches for regression problems.
+| Model | MAE | RMSE | R² |
+|---|---|---|---|
+| XGBoost | 0.0550 (about 1.54 years) | 0.0772 | 0.6151 |
+| Polynomial regression + Lasso | 0.0552 | 0.0779 | 0.6081 |
+
+XGBoost is slightly better on every metric. The polynomial model stays a clear, interpretable baseline. Both models make larger errors on older abalone.
+
+## Run it
+
+```bash
+pip install pandas numpy scikit-learn xgboost shap matplotlib seaborn scipy
+python 39991938_XGBoost_model.py
+python 39991938_Pol_Reg_Model.py
+```
+
+The scripts read the dataset `abalone.head` from the current folder. The path is written Windows-style (`\\abalone.head`), so on Mac or Linux change it to `/abalone.head`. The full write-up is `39991938_Data_Mining_Coursework.pdf`.
